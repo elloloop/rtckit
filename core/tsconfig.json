@@ -1,0 +1,20 @@
+{
+  "//": "Self-contained on purpose — the OSS core must not depend on @learning/config so it can be lifted into its own repo unchanged. CommonJS keeps the pure-logic core testable via `node --test` with zero test-runner deps; ESM/dual-publish is a later packaging concern, not a correctness one.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": ["ES2022", "DOM"],
+    "esModuleInterop": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "declaration": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "dist-test", "src/**/*.test.ts"]
+}

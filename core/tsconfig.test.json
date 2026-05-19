@@ -1,0 +1,10 @@
+{
+  "//": "Compiles src + *.test.ts to dist-test/ so `node --test` can run them with zero test-runner deps.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist-test",
+    "declaration": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "dist-test"]
+}
