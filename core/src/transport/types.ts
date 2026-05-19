@@ -35,22 +35,26 @@ export interface VideoTransport {
 }
 
 /**
- * Provider boundary for SFU mode. Every method maps to a server-side
- * proxied call (the App Secret never reaches the browser — see
- * backend/internal/service/realtime). A new provider = a new
- * implementation of this interface + a config binding.
+ * Provider boundary for SFU mode — **WHIP/WHEP-shaped on purpose**.
+ *
+ * WHIP (RFC 9725) and WHEP are the standard HTTP WebRTC ingest/egress
+ * exchange: POST a local SDP offer, get an SDP answer + a resource URL,
+ * DELETE the resource to leave. Modeling the seam on the standard means
+ * any WHIP/WHEP-capable SFU (Cloudflare Realtime today; self-hosted
+ * mediasoup/LiveKit on fixed boxes later) is a drop-in — the provider is
+ * a swappable binding, not a foundation.
+ *
+ * Every call is brokered by the control-plane backend so the provider
+ * App Secret never reaches the browser. A provider that lacks WHIP/WHEP
+ * gets a native adapter that still satisfies this interface.
  */
 export interface SfuAdapter {
   readonly provider: string;
-  /** Create a session; returns the opaque session handle. */
-  createSession(): Promise<{ sessionId: string }>;
-  publish(
-    sessionId: string,
-    tracks: MediaStreamTrack[],
-  ): Promise<{ trackIds: string[] }>;
-  subscribe(
-    sessionId: string,
-    remoteTrackIds: string[],
-  ): Promise<MediaStreamTrack[]>;
-  close(sessionId: string): Promise<void>;
+  /** WHIP: publish local tracks. `offer` is the browser's SDP; resolves
+   *  to the SFU's SDP answer + the resource URL used to tear down. */
+  whipPublish(offer: string): Promise<{ answer: string; resource: string }>;
+  /** WHEP: subscribe to the room's remote media. */
+  whepSubscribe(offer: string): Promise<{ answer: string; resource: string }>;
+  /** DELETE the WHIP/WHEP resource (leave / unpublish). */
+  close(resource: string): Promise<void>;
 }
