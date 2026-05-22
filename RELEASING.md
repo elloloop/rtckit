@@ -1,30 +1,42 @@
 # Releasing the npm packages
 
-The `@elloloop/rtckit-*` TypeScript libraries are published to npm **only** by
-CI, using **GitHub OIDC trusted publishing** (provenance) — never from a local
-machine and never with a stored npm token. This is a deliberate supply-chain
-choice: no long-lived secret, and every release is provenance-signed.
+**Ongoing** releases of the `@elloloop/rtckit-*` TypeScript libraries are
+published to npm **only** by CI, using **GitHub OIDC trusted publishing**
+(provenance) — no stored npm token, every release provenance-signed. The one
+exception is a single **bootstrap publish per package name** (below): npm
+(unlike PyPI) requires a package to already exist before a Trusted Publisher
+can be configured, so the very first version must be created manually.
 
 ## One-time setup (required before the first publish)
 
 These are manual and can only be done by a maintainer — CI cannot do them.
 
-### 1. npmjs.com — register a Trusted Publisher per package
+### 1. npmjs.com — bootstrap the package, then register a Trusted Publisher
 
 For **each** package name (`@elloloop/rtckit-core` today; future bindings like
 `@elloloop/rtckit-react` later):
 
 - Own/control the `@elloloop` scope (org or user scope) and allow **public**
   scoped packages.
-- Add a **Trusted Publisher** (npmjs.com → package *Settings → Trusted
-  Publisher*, or the account/org "Trusted Publishers" page) pointing at:
+- **Bootstrap (one time): publish an initial version manually** to create the
+  package on npm — npm will not let you configure a Trusted Publisher until
+  the package exists. From a clean checkout of `main`:
+
+  ```bash
+  pnpm install && pnpm build
+  cd core && npm publish --access public   # use `npm login` / 2FA OTP
+  # creates @elloloop/rtckit-core@0.0.1
+  ```
+
+- Now add a **Trusted Publisher** (npmjs.com → the package's *Settings →
+  Trusted Publisher*) pointing at:
   - **Repository:** `elloloop/rtckit`
   - **Workflow:** `.github/workflows/release.yml`
   - **Environment:** _(leave blank unless you add one)_
-- npm lets you **pre-register** a trusted publisher for a package name that
-  does not exist yet — so no bootstrap token publish is needed.
-- Do **not** create an npm automation/granular token or add one to GitHub
-  secrets. Trusted publishing is tokenless by design.
+- After this, **never publish locally again** — every release goes through CI
+  OIDC. The seed changeset's **0.1.0** becomes the first OIDC/provenance
+  release. Do **not** create a long-lived npm automation token or add one to
+  GitHub secrets.
 
 ### 2. GitHub — repo settings
 
