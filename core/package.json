@@ -1,18 +1,62 @@
 {
   "name": "@elloloop/rtckit-core",
   "version": "0.0.1",
-  "private": true,
   "description": "Headless, framework-agnostic real-time calling core (signaling protocol, transport policy, mesh/SFU contracts, headless event surface). Part of elloloop/rtckit.",
   "license": "Apache-2.0",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "author": "elloloop",
+  "homepage": "https://github.com/elloloop/rtckit/tree/main/core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elloloop/rtckit.git",
+    "directory": "core"
+  },
+  "bugs": {
+    "url": "https://github.com/elloloop/rtckit/issues"
+  },
+  "keywords": [
+    "webrtc",
+    "real-time",
+    "calling",
+    "video",
+    "audio",
+    "sfu",
+    "mesh",
+    "signaling",
+    "headless",
+    "rtc"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "tsc -p tsconfig.test.json && node --test \"dist-test/**/*.test.js\"",
     "clean": "rm -rf dist dist-test"
   },
   "devDependencies": {
-    "typescript": "^5.8.0"
+    "tsup": "8.5.1",
+    "typescript": "5.8.3"
   }
 }

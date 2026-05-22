@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# contents/pull-requests: open & merge the Changesets "Version PR".
+# id-token: GitHub OIDC for tokenless npm trusted publishing (provenance).
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Version PR or Publish (OIDC)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Never publish past red: gate the publish on a green build/test.
+      - name: Verify (typecheck · test · build)
+        run: pnpm turbo run typecheck test build
+
+      - name: Create Release Pull Request or Publish (OIDC)
+        uses: changesets/action@v1
+        with:
+          version: pnpm exec changeset version
+          publish: node scripts/publish-oidc.mjs
+          commit: "chore: release packages"
+          title: "chore: release packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

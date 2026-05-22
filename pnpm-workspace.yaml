@@ -1,0 +1,9 @@
+# TypeScript / npm workspace. The Go module (go.mod at repo root),
+# third_party/, examples/ and protocol/ are NOT part of the pnpm workspace.
+# `core` is the first published library; future framework bindings
+# (e.g. @elloloop/rtckit-react) live under packages/* and are picked up here.
+packages:
+  - 'core'
+  - 'packages/*'
+
+strictPeerDependencies: false
