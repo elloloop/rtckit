@@ -1,6 +1,6 @@
 {
   "name": "@elloloop/rtckit-core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Headless, framework-agnostic real-time calling core (signaling protocol, transport policy, mesh/SFU contracts, headless event surface). Part of elloloop/rtckit.",
   "license": "Apache-2.0",
   "author": "elloloop",
